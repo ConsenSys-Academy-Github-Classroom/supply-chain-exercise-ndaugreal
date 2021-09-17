@@ -1,23 +1,47 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.16 <0.9.0;
+//pragma experimental ABIEncoderV2;
 
 contract SupplyChain {
 
   // <owner>
+  address public owner; 
 
   // <skuCount>
+  uint public skuCount;
 
   // <items mapping>
+  mapping(uint => Item) public items;
+  // Item[] public items;
 
   // <enum State: ForSale, Sold, Shipped, Received>
+  enum State {
+    ForSale,
+    Sold,
+    Shipped,
+    Received
+  }
 
   // <struct Item: name, sku, price, state, seller, and buyer>
+  struct Item {
+    //State state;
+    string name;
+    uint sku;
+    uint price;
+    State state;
+    address payable seller;
+    address payable buyer;
+  }
   
+
+
   /* 
    * Events
    */
 
   // <LogForSale event: sku arg>
+
+  event LogForSale(uint indexed sku);
 
   // <LogSold event: sku arg>
 
@@ -33,6 +57,11 @@ contract SupplyChain {
   // Create a modifer, `isOwner` that checks if the msg.sender is the owner of the contract
 
   // <modifier: isOwner
+
+  modifier isOwner () {
+    require (msg.sender == owner);
+    _;
+  }
 
   modifier verifyCaller (address _address) { 
     // require (msg.sender == _address); 
@@ -67,14 +96,34 @@ contract SupplyChain {
 
   constructor() public {
     // 1. Set the owner to the transaction sender
+    owner = msg.sender;
+
     // 2. Initialize the sku count to 0. Question, is this necessary?
+    skuCount = 0;
   }
 
   function addItem(string memory _name, uint _price) public returns (bool) {
     // 1. Create a new item and put in array
+
+    items[skuCount] = Item({
+      name: _name,
+      sku: skuCount,
+      price: _price,
+      state: State.ForSale, 
+      seller: msg.sender,
+      buyer: address(0)
+      //seller: payable(msg.sender),
+      //buyer: payable(address(0))
+    });
+
     // 2. Increment the skuCount by one
+    skuCount += 1;
+
     // 3. Emit the appropriate event
+    emit LogForSale(skuCount);
+
     // 4. return true
+    return true;
 
     // hint:
     // items[skuCount] = Item({
@@ -114,20 +163,20 @@ contract SupplyChain {
   // 1. Add modifiers to check 
   //    - the item is shipped already 
   //    - the person calling this function is the buyer. 
-  // 2. Change the state of the item to received. 
-  // 3. Call the event associated with this function!
-  function receiveItem(uint sku) public {}
+  // 2. change the state of the item to received. 
+  // 3. call the event associated with this function!
+  function receiveitem(uint sku) public {}
 
-  // Uncomment the following code block. it is needed to run tests
-  /* function fetchItem(uint _sku) public view */ 
-  /*   returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) */ 
-  /* { */
-  /*   name = items[_sku].name; */
-  /*   sku = items[_sku].sku; */
-  /*   price = items[_sku].price; */
-  /*   state = uint(items[_sku].state); */
-  /*   seller = items[_sku].seller; */
-  /*   buyer = items[_sku].buyer; */
-  /*   return (name, sku, price, state, seller, buyer); */
-  /* } */
+  // uncomment the following code block. it is needed to run tests
+  function fetchitem(uint _sku) public view 
+     returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) 
+   { 
+     name = items[_sku].name; 
+     sku = items[_sku].sku; 
+     price = items[_sku].price; 
+     state = uint(items[_sku].state); 
+     seller = items[_sku].seller; 
+     buyer = items[_sku].buyer; 
+     return (name, sku, price, state, seller, buyer); 
+   } 
 }
