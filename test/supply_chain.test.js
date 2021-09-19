@@ -156,8 +156,6 @@ contract("SupplyChain", function (accounts) {
     it("should add an item with the provided name and price", async () => {
       await instance.addItem(name, price, { from: alice });
 
-      console.log(instance);
-
       const result = await instance.fetchItem.call(0);
 
       assert.equal(
@@ -187,7 +185,7 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should emit a LogForSale event when an item is added", async () => {
+    it("should emit a LogForSale event when an item is added", async () => {
       let eventEmitted = false;
       const tx = await instance.addItem(name, price, { from: alice });
 
@@ -202,7 +200,7 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should allow someone to purchase an item and update state accordingly", async () => {
+    it("should allow someone to purchase an item and update state accordingly", async () => {
       await instance.addItem(name, price, { from: alice });
       var aliceBalanceBefore = await web3.eth.getBalance(alice);
       var bobBalanceBefore = await web3.eth.getBalance(bob);
@@ -239,12 +237,12 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should error when not enough value is sent when purchasing an item", async () => {
+    it("should error when not enough value is sent when purchasing an item", async () => {
       await instance.addItem(name, price, { from: alice });
       await catchRevert(instance.buyItem(0, { from: bob, value: 1 }));
     });
 
-    it.skip("should emit LogSold event when and item is purchased", async () => {
+    it("should emit LogSold event when and item is purchased", async () => {
       var eventEmitted = false;
 
       await instance.addItem(name, price, { from: alice });
@@ -257,13 +255,13 @@ contract("SupplyChain", function (accounts) {
       assert.equal(eventEmitted, true, "adding an item should emit a Sold event");
     });
 
-    it.skip("should revert when someone that is not the seller tries to call shipItem()", async () => {
+    it("should revert when someone that is not the seller tries to call shipItem()", async () => {
       await instance.addItem(name, price, { from: alice });
       await instance.buyItem(0, { from: bob, value: price });
       await catchRevert(instance.shipItem(0, { from: bob }));
     });
 
-    it.skip("should allow the seller to mark the item as shipped", async () => {
+    it("should allow the seller to mark the item as shipped", async () => {
       await instance.addItem(name, price, { from: alice });
       await instance.buyItem(0, { from: bob, value: excessAmount });
       await instance.shipItem(0, { from: alice });
@@ -277,7 +275,7 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should emit a LogShipped event when an item is shipped", async () => {
+    it("should emit a LogShipped event when an item is shipped", async () => {
       var eventEmitted = false;
 
       await instance.addItem(name, price, { from: alice });
@@ -295,7 +293,7 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should allow the buyer to mark the item as received", async () => {
+    it("should allow the buyer to mark the item as received", async () => {
       await instance.addItem(name, price, { from: alice });
       await instance.buyItem(0, { from: bob, value: excessAmount });
       await instance.shipItem(0, { from: alice });
@@ -310,7 +308,7 @@ contract("SupplyChain", function (accounts) {
       );
     });
 
-    it.skip("should revert if an address other than the buyer calls receiveItem()", async () => {
+    it("should revert if an address other than the buyer calls receiveItem()", async () => {
       await instance.addItem(name, price, { from: alice });
       await instance.buyItem(0, { from: bob, value: excessAmount });
       await instance.shipItem(0, { from: alice });
@@ -318,7 +316,7 @@ contract("SupplyChain", function (accounts) {
       await catchRevert(instance.receiveItem(0, { from: alice }));
     });
 
-    it.skip("should emit a LogReceived event when an item is received", async () => {
+    it("should emit a LogReceived event when an item is received", async () => {
       var eventEmitted = false;
 
       await instance.addItem(name, price, { from: alice });
